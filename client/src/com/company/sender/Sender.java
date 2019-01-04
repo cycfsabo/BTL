@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.*;
 
 public class Sender {
+    public static int partseek = 0;
     public Sender(int port){
         try{
             ServerSocket serverSocket = new ServerSocket(port, 1024);
