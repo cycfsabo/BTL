@@ -16,7 +16,7 @@ public class Sender {
     public static int partseek = 0;
     public Sender(int port){
         try{
-            ServerSocket serverSocket = new ServerSocket(port, 1024);
+            ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Listenning for connections on port " +
                     serverSocket.getLocalPort());
             while (true){

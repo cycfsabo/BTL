@@ -30,12 +30,18 @@ public class EchoThread extends Thread {
             BufferedReader bufferedReader = new BufferedReader(inR);
             OutputStream out = this.connSock.getOutputStream();
 
+            String fileName = bufferedReader.readLine();
+            System.out.println("file name: " + fileName);
+            String fileDirect = "./src/Container/";
+            FileDetach fileDetach = new FileDetach(fileDirect + fileName);
+
             while (true){
                 in.read(partBytes);
                 String s = new String(partBytes);
                 int part = Integer.parseInt(s);
 
                 //call FileDetach and get part
+                out.write(fileDetach.getPart(part));
                 //send part to receivThread
 
             }
@@ -81,9 +87,5 @@ public class EchoThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public synchronized void synchpart(){
-        Sender.partseek += 1;
     }
 }
