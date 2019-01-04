@@ -6,6 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ReadFile {
+    /**
+     * Class test chuc nang doc file
+     * Muc dich: phuc vu cho nghien cuu viet class WriteFile
+     *
+     */
     private File file;
     private FileInputStream fileInputStream;
     byte[] bytesread;

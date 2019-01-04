@@ -3,6 +3,11 @@ package com.company;
 import java.io.*;
 
 public class WriteFile {
+    /**
+     * Class test chuc nang copy bytes tu file nay sang file khac
+     * Muc dich: phuc vu cho nghien cuu viet class FileCombine
+     *
+     */
     private File file;
     private FileOutputStream fileOutputStream;
     private FileInputStream fileInputStream;
