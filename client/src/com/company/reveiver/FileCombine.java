@@ -10,32 +10,47 @@ public class FileCombine {
      * --> Lay cac partFile da duoc luu trong 1 folder cu the va ghep lai
      * --> con ton tai 1 van de nho
      *
+     * Input: String newFileName
+     * --> ten file moi
+     * --> file moi duoc tao ra ngay tai vi tri folder chua folder
      */
     private File folder;
     private File file;
+    private String newFileName;
 
-    public FileCombine(String folderAddr){
-        this.folder = new File(folderAddr);
-        this.combine();
+    public FileCombine(String folderDirect, String newFileName){
+        this.folder = new File(folderDirect);
+        this.newFileName = newFileName;
+        this.combine(folderDirect);
     }
 
-    private void combine(){
-        this.file = new File(this.folder.getName());
+    private void combine(String folderDirect){
+        this.file = new File(this.folder.getParent() + "/" + newFileName);
         File[] listOfFile = this.folder.listFiles();
+        String folderName = folder.getName();
+        int fileNumber = listOfFile.length;
 
         try {
             FileOutputStream out = new FileOutputStream(file);
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            randomAccessFile.seek(0);
+            long position = 0;
 
-            for (File index : listOfFile) {
-                int bytesread;
-                FileInputStream fi = new FileInputStream(index);
-                byte[] data = new byte[(int) index.length()]; //1 part k <= 10MB = 80000000 >>> int
-                while ((bytesread = fi.read(data)) > 0) {
-                    out.write(data, 0, bytesread);
-                }
-                fi.close();
+            for(int i = 0; i < fileNumber; i++){
+                String indexName = String.format("%8s", Integer.toString(i)).replace(' ', '0');
+                File file = new File(folderDirect +"/"+folderName+indexName);
+                FileInputStream fileInputStream = new FileInputStream(file);
+                System.out.println(file.getName());
+
+                byte[] data = new byte[(int) file.length()];
+                fileInputStream.read(data);
+                randomAccessFile.write(data, 0, data.length);
+                position = position + file.length();
+                randomAccessFile.seek(position);
+                fileInputStream.close();
             }
             out.close();
+//            this.clean();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
