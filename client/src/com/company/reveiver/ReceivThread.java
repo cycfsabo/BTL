@@ -13,10 +13,12 @@ public class ReceivThread extends Thread{
      *
      */
     private Socket connsock;
-    private int partSize = 80000000; //1 partSize = 10 MB
+    private String fileName;
+    private int partSize = 800; //1 partSize = 10 MB
 
-    public ReceivThread(Socket connsock){
+    public ReceivThread(Socket connsock, String fileName){
         this.connsock = connsock;
+        this.fileName = fileName;
     }
 
     public void run(){
@@ -25,6 +27,13 @@ public class ReceivThread extends Thread{
             InputStreamReader inR = new InputStreamReader(in);
             BufferedReader bufferedReader = new BufferedReader(inR);
             OutputStream out = this.connsock.getOutputStream();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(out));
+
+            System.out.println("send file name: ");
+
+            bufferedWriter.write(fileName);
+            System.out.println(fileName);
+
 
             while (true) {
                 //8 bytes part number
@@ -34,7 +43,13 @@ public class ReceivThread extends Thread{
                 out.write(bytes, 0, 8);
                 out.flush();
 
+
                 //receive part file
+                byte[] bytesread = new byte[partSize];
+                in.read(bytesread, 0, partSize);
+                System.out.println(new String(bytesread));
+                new FileOut(bytesread, "./src/hihi");
+
                 //create filepart by using FileOut class
 //                this.synchpart();
             }
@@ -56,7 +71,7 @@ public class ReceivThread extends Thread{
     }
 
     private synchronized String getFileDirect(){
-        //Lay ten file can tai ve
+        //Lay link file can tai ve
         return Receiver.fileDirect;
     }
 }

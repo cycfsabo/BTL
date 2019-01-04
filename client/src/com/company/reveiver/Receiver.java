@@ -25,11 +25,11 @@ public class Receiver {
         this.partNumber = partNumber;
         this.fileDirect = fileDirect;
         try{
-//            File file = new File(fileDirect);
+            File file = new File(fileDirect);
             boolean folder = new File(fileDirect).mkdirs();
             for (String index: ipAddr){
                 Socket socket = new Socket(index, port);
-                Thread receivThread = new ReceivThread(socket);
+                Thread receivThread = new ReceivThread(socket, file.getName());
                 receivThread.start();
             }
 //            socket = new Socket(ipAddr, port);
