@@ -7,75 +7,74 @@ import java.util.Scanner;
 
 public class Receiver {
     private static final int BUFSIZE = 2048;
-    private static Scanner scan = new Scanner(System.in);
-    private int partSize = 80000000; //1 partSize = 10 MB
+    public static String fileDirect;
+//    private static Scanner scan = new Scanner(System.in);
+//    private int partSize = 80000000; //1 partSize = 10 MB
+    public static int partNumber;
+    public static int partseek = 0;
 
-    private Socket socket = null;
 
-    public Receiver(String ipAddr, int port){
+    public Receiver(String[] ipAddr, int port, String fileDirect){
+        this.partNumber = partNumber;
+        this.fileDirect = fileDirect;
         try{
-            socket = new Socket(ipAddr, port);
-            OutputStream out = socket.getOutputStream();
-            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(out));
-            InputStream in = socket.getInputStream();
-
-            while (true){
-                System.out.print("Input file name: ");
-                String fileName = scan.nextLine();
-
-                if(fileName.isEmpty()){
-                    System.out.println("File name couldn't be empty!");
-                    continue;
-                }
-                else{
-                    String tmp = fileName + "\n";
-                    bufferedWriter.write(tmp);
-                    bufferedWriter.flush();
-                    if(fileName.equals("QUIT")){
-                        break;
-                    }
-
-                    DataInputStream dataInputStream = new DataInputStream(in);
-                    long fileSize = dataInputStream.readLong();
-
-                    if(fileSize == 0){
-                        System.out.println("File not found");
-                        continue;
-                    }
-                    else {
-                        String dir = System.getProperty("user.dir");
-                        OutputStream newFile = new FileOutputStream(dir + "/" + fileName);
-                        byte[] data = new byte[BUFSIZE];
-                        int bytesread;
-                        long byteReceived = 0;
-
-                        // nhan file
-                        while (byteReceived < fileSize && (bytesread = in.read(data)) > 0){
-                            newFile.write(data, 0, bytesread);
-                            byteReceived += bytesread;
-                        }
-                        newFile.close();
-                        System.out.println(fileName + " received");
-                    }
-                }
-                socket.close();
+//            File file = new File(fileDirect);
+            boolean folder = new File(fileDirect).mkdirs();
+            for (String index: ipAddr){
+                Socket socket = new Socket(index, port);
+                Thread receivThread = new ReceivThread(socket);
+                receivThread.start();
             }
+//            socket = new Socket(ipAddr, port);
+//            OutputStream out = socket.getOutputStream();
+//            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(out));
+//            InputStream in = socket.getInputStream();
+//
+//            while (true){
+//                System.out.print("Input file name: ");
+//                String fileName = scan.nextLine();
+//
+//                if(fileName.isEmpty()){
+//                    System.out.println("File name couldn't be empty!");
+//                    continue;
+//                }
+//                else{
+//                    String tmp = fileName + "\n";
+//                    bufferedWriter.write(tmp);
+//                    bufferedWriter.flush();
+//                    if(fileName.equals("QUIT")){
+//                        break;
+//                    }
+//
+//                    DataInputStream dataInputStream = new DataInputStream(in);
+//                    long fileSize = dataInputStream.readLong();
+//
+//                    if(fileSize == 0){
+//                        System.out.println("File not found");
+//                        continue;
+//                    }
+//                    else {
+//                        String dir = System.getProperty("user.dir");
+//                        OutputStream newFile = new FileOutputStream(dir + "/" + fileName);
+//                        byte[] data = new byte[BUFSIZE];
+//                        int bytesread;
+//                        long byteReceived = 0;
+//
+//                        // nhan file
+//                        while (byteReceived < fileSize && (bytesread = in.read(data)) > 0){
+//                            newFile.write(data, 0, bytesread);
+//                            byteReceived += bytesread;
+//                        }
+//                        newFile.close();
+//                        System.out.println(fileName + " received");
+//                    }
+//                }
+//                socket.close();
+//            }
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    private int[] getPart(File file){
-        long fileSize = file.length();
-        int[] sectionInfo = new int[2];
-        sectionInfo[0] = (int) fileSize/partSize;
-        sectionInfo[1] = (int) (fileSize - sectionInfo[0]*partSize);
-        return sectionInfo;
-    }
-
-//    private void savePart(int PartNumber){
-//
-//    }
 }
