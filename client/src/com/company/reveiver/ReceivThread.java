@@ -4,6 +4,14 @@ import java.io.*;
 import java.net.Socket;
 
 public class ReceivThread extends Thread{
+    /**
+     * Luong nhan du lieu cua Receiver
+     * Muc dich: ket noi voi nhieu client nham nhan nhieu partFile cung luc
+     *
+     * Cac partFile nhan duoc Client luu lai voi dinh dang cu the
+     * Sau khi cac partFile da duoc nhan het, ghep cac partFile thanh 1 file bang cach goi Class FileCombine
+     *
+     */
     private Socket connsock;
     private int partSize = 80000000; //1 partSize = 10 MB
 
@@ -26,8 +34,8 @@ public class ReceivThread extends Thread{
                 out.write(bytes, 0, 8);
                 out.flush();
 
-                //receive part file:
-                //
+                //receive part file
+                //create filepart by using FileOut class
 //                this.synchpart();
             }
 
@@ -38,14 +46,17 @@ public class ReceivThread extends Thread{
     }
 
     public synchronized void synchpart(){
+        //Dong bo part tiep theo - thuc hien sau khi yeu cau part tai ve
         Receiver.partseek += 1;
     }
 
     private synchronized int part(){
+        //Lay so part can nhan
         return  Receiver.partseek;
     }
 
     private synchronized String getFileDirect(){
+        //Lay ten file can tai ve
         return Receiver.fileDirect;
     }
 }

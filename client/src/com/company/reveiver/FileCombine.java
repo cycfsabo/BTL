@@ -3,6 +3,14 @@ package com.company.reveiver;
 import java.io.*;
 
 public class FileCombine {
+    /**
+     * Muc dich: ghep cac partFile thanh file hoan chinh, sao do xoa folder
+     *
+     * Input: String folderAddr
+     * --> Lay cac partFile da duoc luu trong 1 folder cu the va ghep lai
+     * --> con ton tai 1 van de nho
+     *
+     */
     private File folder;
     private File file;
 
@@ -14,7 +22,6 @@ public class FileCombine {
     private void combine(){
         this.file = new File(this.folder.getName());
         File[] listOfFile = this.folder.listFiles();
-
 
         try {
             FileOutputStream out = new FileOutputStream(file);
@@ -29,7 +36,6 @@ public class FileCombine {
                 fi.close();
             }
             out.close();
-
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

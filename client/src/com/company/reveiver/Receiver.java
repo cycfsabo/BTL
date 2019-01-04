@@ -6,7 +6,14 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Receiver {
-    private static final int BUFSIZE = 2048;
+    /**
+     * Class chuyen biet dung de nhan file tu cac client khac nhau
+     * Muc dich:
+     *      - Tao ra so luon tuong ung voi so client chua file
+     *      - Moi luong co chung nang nhan cac partFile cu the do Receiver yeu cau
+     *
+     */
+//    private static final int BUFSIZE = 2048;
     public static String fileDirect;
 //    private static Scanner scan = new Scanner(System.in);
 //    private int partSize = 80000000; //1 partSize = 10 MB

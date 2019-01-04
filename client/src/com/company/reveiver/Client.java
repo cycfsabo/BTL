@@ -4,6 +4,11 @@ import java.io.*;
 import java.net.*;
 
 public class Client {
+    /**
+     * Class khong con duoc su dung
+     * -->Class update: Receiver
+     *
+     */
     private Socket sockfd = null;
     private DataInputStream input = null;;
     private DataOutputStream out = null;
