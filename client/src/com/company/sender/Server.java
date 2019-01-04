@@ -5,6 +5,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
+    /**
+     * Class khong con duoc su dung
+     * -->Class update: Sender
+     *
+     */
     private Socket sockfd = null;
     private ServerSocket server = null;
     private DataInputStream in = null;

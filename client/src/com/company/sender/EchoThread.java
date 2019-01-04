@@ -6,6 +6,15 @@ import java.io.*;
 import java.net.Socket;
 
 public class EchoThread extends Thread {
+    /**
+     * Luong gui du lieu tu Sender toi Receiver cua cac Client khac
+     * Muc dich: ket noi toi nhieu Client nham gui cho nhieu Client mot luc
+     *
+     * Voi so part duoc yeu cau tu Receiver, goi den class FileDetach
+     * class FileDetach tra lai chuoi bytes tuong ung voi partFile duoc yeu cau
+     * Client gui chuoi bytes do den Receiver
+     *
+     */
 //    static  final int BUFSIZE = 2048;
     private Socket connSock;
     private byte[] partBytes = new byte[8];
@@ -27,7 +36,7 @@ public class EchoThread extends Thread {
                 int part = Integer.parseInt(s);
 
                 //call FileDetach and get part
-                //send part to receiThread
+                //send part to receivThread
 
             }
 
