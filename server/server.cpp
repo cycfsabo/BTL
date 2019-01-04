@@ -88,6 +88,8 @@ char* concat(vector<string> );
 bool EsxitFile(Peer , char* );
 
 char* appendIntToChar(char* , int );
+
+char* appendVectorStringtoChar(vector<string>);
 int main(){
     InitSocket();
     Bind();
@@ -126,40 +128,44 @@ void *connection_handler(void *server_sockfd){
         char select[bufferSize] ;
         read(sock, select, sizeof(select));     // reveive select from client
         if(strcmp(select,"request-file-list") == 0){
+            // char *string;
             char temp[bufferSize];
             int i=0, j = allFile.size();
-            if(j > 0)   strcpy(temp, (allFile[0]+" ").c_str());
+            if(j > 0)   strcpy(temp, (allFile[0]+" ").c_str());     //
             i++;
             while(i < j){
                 strcat(temp, (allFile[i]+" ").c_str());
                 i++;
             }
             strcat(temp,"\0");
+            // string = appendVectorStringtoChar(allFile);
+            // strcpy(temp, string);
             cout<<"Send: "<<temp<<endl;
             write(sock, temp, strlen(temp)+1);
         }   else if(strcmp(select, "download") == 0){
             char fileName[bufferSize];
             bzero(&fileName, sizeof(fileName));
             read(sock, fileName, sizeof(fileName));
-            int i=0;
+            int i=0, counterFileEsxit = 0;
             int size = peer.size();
-            char listIP[bufferSize];
+            char listIP[bufferSize] ;
+            char notFile[bufferSize] = "QUIT";
             bzero(&listIP, sizeof(listIP));
-            while(i < size){
+            while(i < size){        // kiem tra cac peer
                 Peer p = peer[i];
                 if(EsxitFile(p,fileName)){
+                    counterFileEsxit++;
                     char *temp;
                     char ip[bufferSize] ;
                     strcpy(ip, p.getIP());
                     int port = p.getPort();
                     temp = appendIntToChar(ip, port);
-                    // cout<<"2"<<endl;
-                    // cout<<"Temp: "<<temp<<endl;
                     strcat(listIP, temp);
-                    // cout<<"1"<<endl;
                 }
                 i++;
             }
+            if(counterFileEsxit == 0)   write(sock, notFile, sizeof(notFile));
+            cout<<listIP<<endl;
             cout<<listIP<<endl;
             write(sock, listIP, strlen(listIP));
             /*
@@ -167,6 +173,7 @@ void *connection_handler(void *server_sockfd){
             */
         }   else if(strcmp(select, "disconnect") == 0){
             cout<<"Disconnected from client"<<endl;
+            // pthread_exit();
             close(sock);
         }
         pthread_mutex_destroy(&counter_mutex);
@@ -280,4 +287,17 @@ char* appendIntToChar(char* text, int num){     // noi int vao char*
     strcat(text, temp);
     strcat(text," \0");
     return text;
+}
+
+char* appendVectorStringtoChar(vector<string> s){
+    char t[bufferSize];
+    int i=0, j = allFile.size();
+    if(j > 0)   strcpy(t, (allFile[0]+" ").c_str());     //
+    i++;
+    while(i < j){
+        strcat(t, (allFile[i]+" ").c_str());
+        i++;
+    }
+    strcat(t,"\0");
+    return t;
 }

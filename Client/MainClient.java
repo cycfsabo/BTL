@@ -19,11 +19,11 @@ public class MainClient {
 	private static int bufferSize = 1024;
 	private static Socket socketOfClient = null;
 	private static BufferedWriter os = null;
-//	private static BufferedReader is = null;
 	private static InputStreamReader in = null;
 	private static FileList fileList;
 	public static Scanner scanner = new Scanner(System.in);
 	private static String list = "";
+	private static String listIP = "";
 	private static String fileName = null;
 	public static void InitSocket() {
 		System.out.println("Enter Port: ");
@@ -33,7 +33,6 @@ public class MainClient {
 			socketOfClient = new Socket(serverHost, port);
 			System.out.println("Show socket: "+socketOfClient.getLocalPort());
 			os = new BufferedWriter(new OutputStreamWriter(socketOfClient.getOutputStream(), "UTF-8"));
-//			is = new BufferedReader(new InputStreamReader(socketOfClient.getInputStream()));
 			in = new InputStreamReader(socketOfClient.getInputStream());
 		}	catch(UnknownHostException e) {
 			System.out.println(e);
@@ -73,6 +72,13 @@ public class MainClient {
 		}
 		return rMsg;
 	}
+	
+	public static void setListIPToClient(String _listIP) {
+		listIP = _listIP;
+	}
+	public static String getListIPToClient() {
+		return listIP;
+	}
 	public static void FMenu() {
 		Scanner scanner = new Scanner(System.in);
 		Menu menu = new Menu();
@@ -89,16 +95,21 @@ public class MainClient {
 				break;
 			}
 			case 2: {		// download
-				String listIP = "";
+				String notFile = "QUIT";
 				os.write(menu.getSelectTypeString());
 				os.flush();
 				System.out.print("Enter file name: ");
-					fileName = scanner.nextLine();
+				fileName = scanner.nextLine();
 				fileName.concat("\0");
 				os.write(fileName);
 				os.flush();
-				listIP = ReceicedMsg(listIP);
-				System.out.println(listIP);
+				setListIPToClient(ReceicedMsg(listIP));
+				if(getListIPToClient().equals(notFile))	{
+					System.out.println("The server has no file !!!");
+					System.out.println("Confluent file name.");
+					return ;
+				}
+				System.out.println(getListIPToClient());
 				break;
 			}
 			case 3: {		// disconnect
@@ -116,9 +127,11 @@ public class MainClient {
 		// TODO Auto-generated method stub
 		InitSocket();
 		InitFileList();
-		SendMsg(GetFileList());
 //		while(true) {
-			FMenu();
+//			SendMsg(GetFileList());
+//			FMenu();
 //		}
+		SendMsg(GetFileList());
+		FMenu();
 	}
 }
