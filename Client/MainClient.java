@@ -115,6 +115,7 @@ public class MainClient {
 			case 3: {		// disconnect
 				os.write(menu.getSelectTypeString());
 				os.flush();
+				System.out.println("Disconnected!!!");
 				socketOfClient.close();
 				return ;
 			}
@@ -127,11 +128,11 @@ public class MainClient {
 		// TODO Auto-generated method stub
 		InitSocket();
 		InitFileList();
-//		while(true) {
-//			SendMsg(GetFileList());
-//			FMenu();
-//		}
-		SendMsg(GetFileList());
-		FMenu();
+		while(true) {
+			SendMsg(GetFileList());
+			FMenu();
+		}
+//		SendMsg(GetFileList());
+//		FMenu();
 	}
 }

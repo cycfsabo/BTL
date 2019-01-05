@@ -14,7 +14,7 @@ public class FileList {
 		for (File index : file) {
 			list = list.concat(index.getName().concat("\n"));
 		}
-		System.out.print(list);
+//		System.out.print(list);
 	}
 	
 	public String getFileList() {
