@@ -103,7 +103,6 @@ int main(){
         cout<<"Show Port: "<<peer[counter].getPort()<<endl;
         counter++;
     }
-    // show(allFile);
     close(client_sockfd);
     return 0;
 }
@@ -114,6 +113,7 @@ void *connection_handler(void *server_sockfd){
     char buffer[bufferSize];
     vector<string> list;
     pthread_detach(pthread_self());
+    // counter++;
     while(1){
         char fileList[bufferSize];
         cout<<"Server waiting..."<<endl;
@@ -122,13 +122,13 @@ void *connection_handler(void *server_sockfd){
         if((nbytes = read(sock, fileList,sizeof(fileList))) <= 0){
             break;
         } 
+        cout<<"Received file list."<<endl;
         list = split(fileList);  
         peer[counter].setfileList(list);    // add ds vao peer[counter]
         addFile(list);            // them danh sach file vao allFile
         char select[bufferSize] ;
         read(sock, select, sizeof(select));     // reveive select from client
-        if(strcmp(select,"request-file-list") == 0){
-            // char *string;
+        if(!strcmp(select,"request-file-list")){
             char temp[bufferSize];
             int i=0, j = allFile.size();
             if(j > 0)   strcpy(temp, (allFile[0]+" ").c_str());     //
@@ -142,10 +142,11 @@ void *connection_handler(void *server_sockfd){
             // strcpy(temp, string);
             cout<<"Send: "<<temp<<endl;
             write(sock, temp, strlen(temp)+1);
-        }   else if(strcmp(select, "download") == 0){
+        }   else if(!strcmp(select, "download")){
             char fileName[bufferSize];
             bzero(&fileName, sizeof(fileName));
             read(sock, fileName, sizeof(fileName));
+            cout<<"File name received: "<<fileName<<endl;
             int i=0, counterFileEsxit = 0;
             int size = peer.size();
             char listIP[bufferSize] ;
@@ -153,7 +154,7 @@ void *connection_handler(void *server_sockfd){
             bzero(&listIP, sizeof(listIP));
             while(i < size){        // kiem tra cac peer
                 Peer p = peer[i];
-                if(EsxitFile(p,fileName)){
+                if(EsxitFile(p,fileName) && p.getState() == true){
                     counterFileEsxit++;
                     char *temp;
                     char ip[bufferSize] ;
@@ -165,18 +166,18 @@ void *connection_handler(void *server_sockfd){
                 i++;
             }
             if(counterFileEsxit == 0)   write(sock, notFile, sizeof(notFile));
-            cout<<listIP<<endl;
-            cout<<listIP<<endl;
+            cout<<"List IP: "<<listIP<<endl;
             write(sock, listIP, strlen(listIP));
             /*
             Download
             */
-        }   else if(strcmp(select, "disconnect") == 0){
+        }   else if(!strcmp(select, "disconnect")){
             cout<<"Disconnected from client"<<endl;
             // pthread_exit();
+            peer[counter].setState(false);
             close(sock);
         }
-        pthread_mutex_destroy(&counter_mutex);
+        // pthread_mutex_destroy(&counter_mutex);
     }
     close(sock);
     return NULL;
