@@ -5,6 +5,16 @@ import com.company.reveiver.FileOut;
 import java.io.File;
 
 public class FileDetach3 {
+    /**
+     * Muc dich: thu nghiem tach file va luu thanh cac partFile voi ten duoc dinh dang san
+     * --> phuc vu cho viec test class FileCombine
+     * --> class duoc su dung chinh thuc: FileDetach
+     *
+     * @param fileDirect
+     * Input: String fileDirect
+     * --> vi tri file can tach
+     *
+     */
     public FileDetach3(String fileDirect){
         File file = new File(fileDirect);
         String fileName = file.getName();

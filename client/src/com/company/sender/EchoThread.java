@@ -17,7 +17,13 @@ public class EchoThread extends Thread {
      */
 //    static  final int BUFSIZE = 2048;
     private Socket connSock;
-    private byte[] partBytes = new byte[8];
+//    private byte[] partBytes = new byte[8];
+    private InputStream in;
+    private InputStreamReader inR;
+    private BufferedReader bufferedReader;
+    private OutputStream out;
+    private FileDetach fileDetach;
+    private String folderDirect = "./src/Container";
 
     public  EchoThread(Socket connSock){
         this.connSock = connSock;
@@ -25,65 +31,108 @@ public class EchoThread extends Thread {
 
     public void run(){
         try {
-            InputStream in = this.connSock.getInputStream();
-            InputStreamReader inR = new InputStreamReader(in);
-            BufferedReader bufferedReader = new BufferedReader(inR);
-            OutputStream out = this.connSock.getOutputStream();
+            in = this.connSock.getInputStream();
+            inR = new InputStreamReader(this.connSock.getInputStream());
+            bufferedReader = new BufferedReader(inR);
+            out = this.connSock.getOutputStream();
+            System.out.println("echothread");
 
-            String fileName = bufferedReader.readLine();
-            System.out.println("file name: " + fileName);
-            String fileDirect = "./src/Container/";
-            FileDetach fileDetach = new FileDetach(fileDirect + fileName);
+            //get File name
+//            String filename = this.getFileName();
+            String filename = "/test.jpg";
 
-            while (true){
-                in.read(partBytes);
-                String s = new String(partBytes);
-                int part = Integer.parseInt(s);
+            //send total part number
+            fileDetach = new FileDetach(folderDirect + filename);
+//            fileDetach = new FileDetach(folderDirect + "/" + filename);
+            int partNum = fileDetach.getPartNumber();
+
+            //send part Number
+            this.shipPartNumber(partNum);
+            this.shipLastPartSize();
+            int part = 0;
+            while (part < partNum-1){
+                //get part number of partFile from receivThread
+                part = this.getPart();
 
                 //call FileDetach and get part
-                out.write(fileDetach.getPart(part));
                 //send part to receivThread
+                if(part == (partNum-1)){
+                    this.shipLastPart();
+                } else {
+                    this.shipPart(part);
+                }
+//                this.shipPart(part);
+
 
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-//            while (true){
-//                String fileName = bufferedReader.readLine();
-//                if(fileName == null){
-//                    break;
-//                }
-//                else if(fileName.equals("QUIT")){
-//                    System.out.println(this.connSock.getInetAddress() +
-//                            ":" + this.connSock.getPort() +
-//                            " disconnected");
-//                    break;
-//                }
-//
-//                String dir = System.getProperty("user.dir");
-//                File file = new File(dir + "/file2send/" + fileName);
-//                DataOutputStream dataOut = new DataOutputStream(out);
-//
-//                if(!file.exists()){
-//                    long fileSize = 0L;
-//                    dataOut.writeLong(fileSize);
-//                    continue;
-//                }
-//                else {
-//                    long fileSize = file.length();
-//                    dataOut.writeLong(fileSize);
-//
-//                    FileInputStream fi = new FileInputStream(file);
-//                    byte[] data = new byte[BUFSIZE];
-//                    int bytesread;
-//                    //gui file:
-//                    while ((bytesread = fi.read(data)) > 0){
-//                        out.write(data, 0, bytesread);
-//                        out.flush();
-//                    }
-//                    fi.close();
-//                }
-//            }
-//            connSock.close();
+    private String getFileName(){
+        String fileName = null;
+        try{
+            fileName = bufferedReader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileName;
+    }
 
+    private int getPart(){
+        int part = 0;
+        try{
+            byte[] partBytes = new byte[8];
+            in.read(partBytes, 0, 8);
+            String s = String.format("%8s", new String(partBytes)).replace(' ', '0');//new String(partBytes);
+            System.out.println("line 81: part string: " + s);
+            part = Integer.parseInt(s);
+
+            System.out.println("line 84: part int: " + part);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return part;
+    }
+
+    private void shipPart(int part) {
+        try {
+            out.write(fileDetach.getPart(part));
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void shipLastPart(){
+        try{
+            out.write(fileDetach.getLastPart());
+            out.flush();
+            System.out.println(fileDetach.getLastPart().length);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void shipPartNumber(int partNum){
+        try{
+            String partNumber = String.format("%8s", Integer.toString(partNum)).replace(' ', '0');
+            byte[] partNumberBytes = partNumber.getBytes();
+            out.write(partNumberBytes, 0, 8);
+            System.out.println("line 104: PartNumber: " + partNumber);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void shipLastPartSize(){
+        int lastPartSize = fileDetach.getLastPart().length;
+        try{
+            String lastSize = String.format("%10s", Integer.toString(lastPartSize)).replace(' ', '0');
+            byte[] partNumberBytes = lastSize.getBytes();
+            out.write(partNumberBytes, 0, 10);
+            System.out.println("line 117: last size: " + lastSize);
         } catch (IOException e) {
             e.printStackTrace();
         }
