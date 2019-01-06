@@ -16,20 +16,22 @@ public class ReceivThread extends Thread{
      */
     private Socket connsock;
     private String fileName;
-    private int partSize = 80000; //1 partSize = 10 MB
+    private int partSize = 40000000; //1 partSize = 5 MB
     private InputStream in;
     private InputStreamReader inR;
     private BufferedReader bufferedReader;
     private OutputStream out;
     private BufferedWriter bufferedWriter;
-    private String folderDirect = "./src/Container";
+    private String folderDirect;
     private int lastPartSize;
     private String newFileName;
+    private int partNumber;
 
     public ReceivThread(Socket connsock, String fileName, String newFileName){
         this.connsock = connsock;
         this.fileName = fileName;
         this.newFileName = newFileName;
+        this.folderDirect = this.getFileDirect();
     }
 
     public void run(){
@@ -42,48 +44,35 @@ public class ReceivThread extends Thread{
 
 
             System.out.println("send file name: ");
-//            this.shipFileName();
-
+            this.shipFileName();
             System.out.println("line 44: file name: " + fileName);
 
             //get part number
-            int partNumber = this.getPartNumber();
+            partNumber = this.getPartNumber();
             lastPartSize = this.getLastPartSize();
 
-            while (this.part() < partNumber-1) {
+            while (this.part() < partNumber) {
                 //8 bytes part number
                 this.synchpart();
 
                 //try part file
                 String part = this.tryPart();
-                System.out.println("line 55: " + part);
-
-                System.out.println("get part");
-                //receive part file
-                byte[] bytesread = this.getPart();
+                System.out.println("line 59: " + part);
+                byte[] data;
+                if(this.part() == partNumber - 1){
+                    data = this.getLastPart();
+                }
+                else{
+                    data = this.getPart();
+                }
 
                 //Save part
-                new FileOut(bytesread, folderDirect + "/" + fileName + "./" + fileName + "." + part);
+                new FileOut(data, folderDirect + "/" + fileName + "./" + fileName + "." + part);
+                this.synchPartReceived();
             }
 
-            System.out.println("asdadsf");
-
-            if(this.com() == 0){
-                this.synchpart();
-                //try last part file
-                String part = this.tryPart();
-                System.out.println("line 55: " + part);
-
-                //receive part file
-                byte[] bytesread = this.getLastPart();
-
-                //Save part
-                System.out.println("213");
-                new FileOut(bytesread, folderDirect + "/" + fileName + "./" + fileName + "." + part);
-//                System.out.println("dfasd");
-                System.out.println("isCombine: " + this.com());
-                System.out.println("combine");
-                this.isCombine();
+            if((this.isCombine()==0) && this.isReceivedAll()){
+                this.synchCombine();
                 new FileCombine(folderDirect + "/" + fileName + "./", newFileName);
             }
             connsock.close();
@@ -111,7 +100,11 @@ public class ReceivThread extends Thread{
     private byte[] getPart(){
         byte[] bytesread = new byte[partSize];
         try {
-            in.read(bytesread);
+            int bytesReceived = 0;
+            while (bytesReceived < partSize){
+                int bytes = in.read(bytesread, bytesReceived,partSize - bytesReceived);
+                bytesReceived = bytesReceived + bytes;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -121,7 +114,11 @@ public class ReceivThread extends Thread{
     private byte[] getLastPart(){
         byte[] bytesread = new byte[lastPartSize];
         try {
-            in.read(bytesread);
+            int bytesReceived = 0;
+            while (bytesReceived < lastPartSize){
+                int bytes = in.read(bytesread, bytesReceived, lastPartSize - bytesReceived);
+                bytesReceived = bytesReceived + bytes;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -160,7 +157,8 @@ public class ReceivThread extends Thread{
 
     private void shipFileName(){
         try {
-            bufferedWriter.write(fileName, 0, fileName.length());
+            bufferedWriter.write(fileName + "\n");
+            bufferedWriter.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -181,11 +179,19 @@ public class ReceivThread extends Thread{
         return Receiver.fileDirect;
     }
 
-    private synchronized void isCombine(){
+    private synchronized void synchCombine(){
         Receiver.isCombine = 1;
     }
 
-    private synchronized int com(){
+    private synchronized int isCombine(){
         return Receiver.isCombine;
+    }
+
+    private synchronized void synchPartReceived(){
+        Receiver.partRemain = Receiver.partRemain + 1;
+    }
+
+    private synchronized boolean isReceivedAll(){
+        return Receiver.partRemain == partNumber;
     }
 }
