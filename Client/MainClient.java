@@ -50,8 +50,17 @@ public class MainClient {
 		list = fileList.getFileList().concat("\0");
 	}
 	
-	public static String GetFileList() {
+	public static String GetFileListTypeString() {
 		return list;
+	}
+	
+	public static String[] GetFileListTypeArray() {
+		String[] listArray = list.split(" ");
+		return listArray;
+	}
+	
+	public static void AddList(String fileName) {
+		list.concat(" "+fileName);
 	}
 	public static void SendMsg(String msg) {
 		try  {
@@ -98,7 +107,7 @@ public class MainClient {
 				break;
 			}
 			case 2: {		// download
-				String notFile = new String("QUIT");
+				String notFile = new String("file-not-found");
 				os.write(menu.getSelectTypeString());
 				os.flush();
 				System.out.print("Enter file name: ");
@@ -134,7 +143,7 @@ public class MainClient {
 		InitFileList();
 		boolean run = true;
 		while(run) {
-			SendMsg(GetFileList());
+			SendMsg(GetFileListTypeString());
 			run = FMenu();
 		}
 	}
