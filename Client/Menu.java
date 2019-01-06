@@ -11,13 +11,12 @@ public class Menu {
 	}
 	
 	public void select() {
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in);
 		do {
 			System.out.print("Enter select: ");
 			input = Integer.parseInt(scanner.nextLine());
 		}while(input<1 || input > 3);
-//		return input;
-//		scanner.close();
 	}
 	public String getSelectTypeString() {
 		String result = null;
