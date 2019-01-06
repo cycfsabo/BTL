@@ -7,7 +7,7 @@ public class FileList {
 	String list = new String("");
 	public void setFileList() {
 		String workingDir = System.getProperty("user.dir");
-		File fileList = new File(workingDir+"/src/Client3");
+		File fileList = new File(workingDir);
 		File[] file = fileList.listFiles();
 		numFile = file.length;
 		for (File index : file) {
