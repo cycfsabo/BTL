@@ -63,7 +63,7 @@ public:
     }
 
 };
-vector<string> allFile;                      // vector luu tru tat ca cac file trong tat ca cac client
+vector<string> FileNameStore;                      // vector luu tru tat ca cac file trong tat ca cac client
 vector<string> split(char[]);
 vector<Peer> peer;      // luu tru cac peer connected
 bool checkFile(vector<string>, string);
@@ -126,31 +126,30 @@ void *connection_handler(void *server_sockfd){
         list = split(fileList);  
         cout<<"counter: "<<counter<<endl;
         peer[counter].setfileList(list);    // add ds vao peer[counter]
-        addFile(list);            // them danh sach file vao allFile
+        addFile(list);            // them danh sach file vao FileNameStore
         char select[bufferSize] ;
         read(sock, select, sizeof(select));     // reveive select from client
         
         if(!strcmp(select,"request-file-list")){
             char temp[bufferSize];
-            int i=0, j = allFile.size();
-            if(j > 0)   strcpy(temp, (allFile[0]+" ").c_str());     //
+            int i=0, j = FileNameStore.size();
+            if(j > 0)   strcpy(temp, (FileNameStore[0]+" ").c_str());     //
             i++;
             while(i < j){
-                strcat(temp, (allFile[i]+" ").c_str());
+                strcat(temp, (FileNameStore[i]+" ").c_str());
                 i++;
             }
-            strcat(temp,"\0");
+            strcat(temp,"\n");
             cout<<"Send: "<<temp<<endl;
-            write(sock, temp, strlen(temp)-1);
+            write(sock, temp, strlen(temp));
         }   else if(!strcmp(select, "download")){
             char fileName[bufferSize];
+            char notFile[bufferSize] = "file-not-found";
             bzero(&fileName, sizeof(fileName));
             read(sock, fileName, sizeof(fileName));
-            cout<<"File name received: "<<endl;
             int i=0, counterFileEsxit = 0;
             int size = peer.size();
             char listIP[bufferSize] ;
-            char notFile[bufferSize] = "QUIT";
             bzero(&listIP, sizeof(listIP));
             while(i < size){        // kiem tra cac peer
                 Peer p = peer[i];
@@ -201,11 +200,11 @@ bool checkFile(vector<string> fileList, string fileName){         //kiem tra xem
     }
     return false;
 }
-void addFile(vector<string> list){                       // them danh sach list vao allFile
+void addFile(vector<string> list){                       // them danh sach list vao FileNameStore
     int i=0;
     int size = list.size();
     while(i < size){
-        if(checkFile(allFile, list[i]) == false)    allFile.push_back(list[i]);
+        if(checkFile(FileNameStore, list[i]) == false)    FileNameStore.push_back(list[i]);
         i++;
     }
 }
@@ -284,6 +283,6 @@ char* appendIntToChar(char* text, int num){     // noi int vao char*
     strcat(text, ":");
     sprintf(temp, "%d", num);
     strcat(text, temp);
-    strcat(text," \0");
+    strcat(text," \n");
     return text;
 }

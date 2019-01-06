@@ -13,7 +13,7 @@ import java.util.Scanner;
 import Client3.FileList;
 
 public class MainClient {
-
+	private static BufferedReader is = null;
 	private static String serverHost ;
 	private static int port ;
 	private static int bufferSize = 1024;
@@ -34,6 +34,7 @@ public class MainClient {
 		try {
 			socketOfClient = new Socket(serverHost, port);
 //			System.out.println("Show socket: "+socketOfClient.getLocalPort());
+			is = new BufferedReader(new InputStreamReader(socketOfClient.getInputStream()));
 			os = new BufferedWriter(new OutputStreamWriter(socketOfClient.getOutputStream(), "UTF-8"));
 			in = new InputStreamReader(socketOfClient.getInputStream());
 		}	catch(UnknownHostException e) {
@@ -60,7 +61,7 @@ public class MainClient {
 	}
 	
 	public static void AddList(String fileName) {
-		list.concat(" "+fileName);
+		list = list.concat(fileName);
 	}
 	public static void SendMsg(String msg) {
 		try  {
@@ -74,10 +75,11 @@ public class MainClient {
 	}
 	
 	public static String ReceicedMsg(String rMsg) {
-		BufferedReader br = new BufferedReader(in);
-		char[] msg = new char[bufferSize];
+//		BufferedReader br = new BufferedReader(in);
+//		char[] msg = new char[bufferSize];
 		try {
-			rMsg = new String(msg, 0, br.read(msg, 0, bufferSize));
+//			rMsg = new String(msg, 0, br.read(msg, 0, bufferSize));
+			rMsg = is.readLine();
 		}	catch(IOException e) {
 			e.printStackTrace();
 		}
