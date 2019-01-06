@@ -170,6 +170,7 @@ void *connection_handler(void *server_sockfd){
                 continue;
             }
             cout<<"List IP: "<<listIP<<endl;
+            strcat(listIP,"\n");
             write(sock, listIP, strlen(listIP));
         }   else if(!strcmp(select, "disconnect")){
             cout<<"Disconnected from client"<<endl;
@@ -283,6 +284,6 @@ char* appendIntToChar(char* text, int num){     // noi int vao char*
     strcat(text, ":");
     sprintf(temp, "%d", num);
     strcat(text, temp);
-    strcat(text," \n");
+    strcat(text," ");
     return text;
 }
