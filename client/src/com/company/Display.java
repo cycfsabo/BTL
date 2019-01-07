@@ -29,7 +29,7 @@ public class Display extends JFrame{
     private MainClient mainClient;
 
     public Display(){
-        mainClient = new MainClient("54.251.179.146", 1235);
+        mainClient = new MainClient("192.168.2.167", 1235);
         new Sender(8888);
         this.setup();
     }

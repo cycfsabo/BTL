@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.reveiver.Receiver;
+import com.company.sender.Sender;
 
 import java.io.*;
 import java.net.Socket;
@@ -23,6 +24,9 @@ public class MainClient {
 	private static String fileName = null;
 
 	public MainClient(String serverAddr, int port){
+		Thread sender = new Sender(8888);
+		sender.start();
+
 		this.initSocket(serverAddr, port);
 		this.initFileList();
 		boolean run = true;
@@ -121,7 +125,7 @@ public class MainClient {
 				break;
 			}
 			case 2: {		// download
-				String notFile = new String("QUIT");
+				String notFile = new String("file-not-found");
 				os.write(menu.getSelectTypeString());
 				os.flush();
 				System.out.print("Enter file name: ");
