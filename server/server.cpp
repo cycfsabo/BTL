@@ -144,7 +144,7 @@ void *connection_handler(void *server_sockfd){
             write(sock, temp, strlen(temp));
         }   else if(!strcmp(select, "download")){
             char fileName[bufferSize];
-            char notFile[bufferSize] = "file-not-found";
+            char notFile[bufferSize] = "file-not-found\n";
             bzero(&fileName, sizeof(fileName));
             read(sock, fileName, sizeof(fileName));
             int i=0, counterFileEsxit = 0;
@@ -158,9 +158,13 @@ void *connection_handler(void *server_sockfd){
                     char *temp;
                     char ip[bufferSize] ;
                     strcpy(ip, p.getIP());
-                    int port = p.getPort();
-                    temp = appendIntToChar(ip, port);
-                    strcat(listIP, temp);
+                    // int port = p.getPort();
+                    // temp = appendIntToChar(ip, port);
+                    // temp = ip;
+                    // strcat()
+                    strcat(ip, " ");
+                    cout<<"IP: "<<ip<<"T"<<endl;
+                    strcat(listIP, ip);
                 }
                 i++;
             }
