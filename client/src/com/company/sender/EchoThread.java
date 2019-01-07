@@ -32,17 +32,18 @@ public class EchoThread extends Thread {
     public void run(){
         try {
             in = this.connSock.getInputStream();
-            inR = new InputStreamReader(this.connSock.getInputStream());
+            inR = new InputStreamReader(in);
             bufferedReader = new BufferedReader(inR);
             out = this.connSock.getOutputStream();
             System.out.println("echothread");
 
             //get File name
-//            String filename = this.getFileName();
-            String filename = "/test.jpg";
+            String filename = this.getFileName();
+            System.out.println(filename);
+//            String filename = "/test.jpg";
 
             //send total part number
-            fileDetach = new FileDetach(folderDirect + filename);
+            fileDetach = new FileDetach(folderDirect + "/" + filename);
 //            fileDetach = new FileDetach(folderDirect + "/" + filename);
             int partNum = fileDetach.getPartNumber();
 
@@ -50,14 +51,16 @@ public class EchoThread extends Thread {
             this.shipPartNumber(partNum);
             this.shipLastPartSize();
             int part = 0;
-            while (part < partNum-1){
+            while (part < partNum){
                 //get part number of partFile from receivThread
                 part = this.getPart();
 
                 //call FileDetach and get part
                 //send part to receivThread
                 if(part == (partNum-1)){
+                    System.out.println("line 61: last part");
                     this.shipLastPart();
+                    break;
                 } else {
                     this.shipPart(part);
                 }
@@ -109,7 +112,7 @@ public class EchoThread extends Thread {
         try{
             out.write(fileDetach.getLastPart());
             out.flush();
-            System.out.println(fileDetach.getLastPart().length);
+//            System.out.println("line 114: " + fileDetach.getLastPart().length);
         } catch (IOException e) {
             e.printStackTrace();
         }

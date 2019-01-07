@@ -4,8 +4,8 @@ import java.io.*;
 
 public class FileDetach2 {
     /**
-     * **Class khong con duoc su dung nua
-     * --> Class update: FileDetach
+     * **Class khong con duoc su dung do hoat dong khong dung
+     * --> Class update: FileDetach3
      *
      * Muc dich: tach 1 file thanh nhieu partFile va luu lai trong 1 folder cung ten
      *           cac partFile co do dai bang nhau va duoc dat ten theo dinh dang
@@ -13,7 +13,7 @@ public class FileDetach2 {
      *           -->ex: FileDetach2.java000000000.txt
      *           -->ex: FileDetach2.java000000001.txt
      */
-    private int partSize = 80000; //partSize = 10MB = 80000000
+    private int partSize = 800000; //partSize = 10MB = 80000000
 //    private boolean folder;
     private File[] listOfFile;
     private FileInputStream fileInputStream;

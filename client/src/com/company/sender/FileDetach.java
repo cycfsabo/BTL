@@ -22,15 +22,15 @@ public class FileDetach {
      * - getLastPart(int part):
      *      Tuong tu nhu getPart nhung tra lai partFile cuoi cung
      */
-    private int partSize = 800; //partSize = 10MB = 80000000
+    private int partSize = 40000000; //partSize = 5MB = 40000000
     private RandomAccessFile randomAccessFile;
     private int partNumber;
     private File file;
 
-    public FileDetach(String fileAddr){
+    public FileDetach(String fileDirect){
         try {
 //            new File(fileAddr).mkdirs();
-            file = new File(fileAddr);               //get file from file address   ex: ./src/com/company/main.java
+            file = new File(fileDirect);               //get file from file address   ex: ./src/com/company/main.java
 //            String fileParent = file.getParent();    //get file parent name string  ex: ./src/com/company
 //            String fileName = file.getName();        //get file name string         ex: main.java
             randomAccessFile = new RandomAccessFile(file, "r");
