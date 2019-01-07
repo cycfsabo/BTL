@@ -4,6 +4,9 @@ import java.io.*;
 
 public class WriteFile {
     /**
+     * Class khong con duoc su dung nua
+     * -->Class update: FileOut
+     *
      * Class test chuc nang copy bytes tu file nay sang file khac
      * Muc dich: phuc vu cho nghien cuu viet class FileCombine
      *
