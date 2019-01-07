@@ -4,7 +4,8 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-public class Sender {
+public class Sender extends Thread{
+    private int port;
     /**
      * Class chuyen biet dung de gui file toi cac client khac nhau
      *
@@ -15,6 +16,9 @@ public class Sender {
      */
     public static int partseek = 0;
     public Sender(int port){
+        this.port = port;
+    }
+    public void run(){
         try{
             ServerSocket serverSocket = new ServerSocket(port);
             System.out.println("Listenning for connections on port " +
