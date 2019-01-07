@@ -1,5 +1,7 @@
 package com.company;
 
+import com.company.reveiver.Receiver;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -78,10 +80,10 @@ public class MainClient {
 	}
 	
 	public static String receicedMsg(String rMsg) {
-		BufferedReader br = new BufferedReader(in);
-		char[] msg = new char[bufferSize];
+//		BufferedReader br = new BufferedReader(in);
+//		char[] msg = new char[bufferSize];
 		try {
-			rMsg = new String(msg, 0, br.read(msg, 0, bufferSize));
+//			rMsg = new String(msg, 0, br.read(msg, 0, bufferSize));
 			rMsg = is.readLine();
 		}	catch(IOException e) {
 			e.printStackTrace();
@@ -134,6 +136,8 @@ public class MainClient {
 				}
 				setListIPToClient(rMsg);
 				System.out.println(getListIPToClient());
+				String[] ipAddr = getListIPToClientArray();
+				Receiver re = new Receiver(ipAddr, 8888, fileName, "new" + fileName);
 				break;
 			}
 			case 3: {		// disconnect
