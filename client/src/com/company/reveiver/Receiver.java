@@ -20,6 +20,7 @@ public class Receiver {
     public static int partNumber;
     public static int partseek = 0;
     public static int isCombine = 0;
+    public static int partRemain = 0;
 
 
     public Receiver(String[] ipAddr, int port, String fileName, String newFileName){

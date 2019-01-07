@@ -48,9 +48,10 @@ public class FileCombine {
                 position = position + file.length();
                 randomAccessFile.seek(position);
                 fileInputStream.close();
+                file.delete();
             }
             out.close();
-//            this.clean();
+//            System.out.println(this.clean());
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -60,7 +61,7 @@ public class FileCombine {
 
     }
 
-    private void clean(){
-        this.folder.delete();
+    private boolean clean(){
+        return this.folder.delete();
     }
 }
